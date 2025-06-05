@@ -20,6 +20,10 @@ function registerPlayer() {
     alert("名前を入力してください");
     return;
   }
+
+  // ✅ プレイヤー一覧に登録
+  db.ref(`players/${name}`).set(true);
+
   localStorage.setItem("playerName", name);
   document.getElementById("nameEntry").style.display = "none";
   document.getElementById("mainGame").style.display = "flex";
@@ -28,11 +32,7 @@ function registerPlayer() {
   updateDeckCount();
   listenPublicCards();
   showHand();
-  listenDice();  // サイコロの同期を開始
-}
-
-function getCurrentPlayerName() {
-  return localStorage.getItem("playerName");
+  listenDice(); // サイコロの同期
 }
 
 function initDeck() {
@@ -266,12 +266,16 @@ function recoverFromDiscard(index) {
 function updateHandCount() {
   const area = document.getElementById("handCountArea");
   area.innerHTML = "";
-  db.ref("hands").once("value").then((snapshot) => {
-    const hands = snapshot.val() || {};
-    for (let name in hands) {
-      const p = document.createElement("p");
-      p.textContent = `${name}：${hands[name].length} 枚`;
-      area.appendChild(p);
+
+  db.ref("players").once("value").then((psnap) => {
+    const players = psnap.val() || {};
+    for (let name in players) {
+      db.ref(`hands/${name}`).once("value").then((hsnap) => {
+        const hand = hsnap.val() || [];
+        const p = document.createElement("p");
+        p.textContent = `${name}：${hand.length} 枚`;
+        area.appendChild(p);
+      });
     }
   });
 }
@@ -291,6 +295,7 @@ function resetGameData() {
   db.ref("discardPile").remove();
   db.ref("publicCardList").remove();
   db.ref("dice").remove();  // ← 追加：サイコロのリセット
+  db.ref("players").remove(); // ← プレイヤー一覧も初期化
 
   alert("初期化しました");
   location.reload();
@@ -359,4 +364,8 @@ function rollDice() {
 // サイコロをリセット（誰でも押せる）
 function resetDice() {
   db.ref("dice").set(null);
+}
+
+function getCurrentPlayerName() {
+  return localStorage.getItem("playerName");
 }
