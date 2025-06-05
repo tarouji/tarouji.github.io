@@ -1,0 +1,58 @@
+body {
+  font-family: sans-serif;
+  padding: 20px;
+}
+
+#handArea,
+#discardArea,
+#publicCardArea {
+  display: flex;
+  flex-wrap: wrap;               /* 折り返し有効 */
+  max-width: 800px;              /* 175px × 4枚 + 余白を考慮（必要に応じて調整） */
+  gap: 10px;                     /* 画像間の間隔 */
+}
+
+#handArea img,
+#discardArea img,
+#publicCardArea img {
+  width: 175px;
+  margin: 5px;
+  cursor: pointer;
+
+  /* 枠線・デザイン追加 */
+  border: 1px solid black;
+  border-radius: 8px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+#instructions {
+  max-width: 250px;
+  font-size: 14px;
+  background: #f9f9f9;
+  padding: 10px;
+  border-left: 3px solid #ccc;
+}
+
+button {
+  margin: 5px;
+  padding: 5px 10px;
+  font-size: 14px;
+}
+
+#publicCardArea div {
+  display: inline-block;
+  text-align: center;
+  margin: 10px;
+}
+
+#publicCardArea p {
+  margin: 4px 0 0 0;
+  font-size: 12px;
+}
+
+#publicCardArea {
+  background: #d4feff;
+  padding: 10px;
+  border: 2px solid #ccc;   /* 枠線（任意） */
+  border-radius: 8px;        /* 角を丸くする（任意） */
+}

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ゼーコガンニョム・テストプレイ用</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+
+    #handArea img,
+    #discardArea img,
+    #publicCardArea img {
+      width: 175px;
+      margin: 5px;
+      cursor: pointer;
+    }
+
+    #instructions {
+      max-width: 250px;
+      font-size: 14px;
+      background: #f9f9f9;
+      padding: 10px;
+      border-left: 3px solid #ccc;
+    }
+  </style>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+</head>
+<body>
+  <h1>ゼーコガンニョム・テストプレイ用</h1>
+
+  <!-- 名前入力画面 -->
+  <div id="nameEntry">
+    <label for="playerNameInput">あなたの名前：</label>
+    <input type="text" id="playerNameInput" placeholder="入力する">
+    <button onclick="registerPlayer()">ゲームに参加</button>
+  </div>
+
+  <!-- ゲーム画面 -->
+  <div id="mainGame" style="display: none; display: flex; gap: 30px;">
+    <!-- 左側：ゲーム本体 -->
+    <div id="mainColumn">
+      <div id="diceArea" style="margin-bottom: 20px;">
+        <h2>サイコロ</h2>
+        <div style="display: flex; align-items: center; gap: 10px;"></div>
+        <span id="diceResult" style="font-size: 24px; margin: 0;">出目：--</span>
+        <button id="rollDiceButton" onclick="rollDice()">サイコロを振る</button>
+        <button id="resetDiceButton" onclick="resetDice()">リセット</button>
+      </div>
+
+      <div id="player-controls">
+        <h2>手札</h2>
+        <button onclick="drawCard()">カードを引く</button>
+      </div>
+
+      <div id="game-area">
+        <div id="handArea"></div>
+
+        <h2>使用カード</h2>
+        <div id="publicCardArea"></div>
+        <button id="confirmPublicCardButton" onclick="confirmPublicCard()" style="display:none;">
+          全員確認したので捨てる
+        </button>
+
+        <button id="returnPublicCardButton" onclick="returnPublicCardToHand()" style="display:none;">
+          手札に戻す
+        </button>
+
+        <h2>捨て札</h2>
+        <div id="discardArea"></div>
+
+        <h2>各プレイヤーの手札枚数</h2>
+        <div id="handCountArea"></div>
+
+        <h2>山札の残り枚数</h2>
+        <p id="deckCountArea">-- 枚</p>
+
+        <!-- 管理者用リセットボタン（見やすく下に配置） -->
+        <hr>
+        <button onclick="initDeck()">【管理者用】山札の初期化（最初に押す）</button>
+        <button onclick="resetGameData()">【管理者用】ゲームの初期化（全データ削除）</button>
+
+      </div>
+    </div>
+
+    <!-- 右側：使い方 -->
+    <div id="instructions">
+    <button onclick="refreshAllViews()">更新</button>
+    <h2>使い方</h2>
+    <ul style="line-height: 1.8; list-style-type: none; padding-left: 0;">
+      <li>・最初に名前を入力して参加</li>
+      <li>&nbsp;</li>
+      <li>・ボタンを押してカードを引く</li>
+      <li>&nbsp;</li>
+      <li>・右クリック：カードを使用</li>
+      <li>　→使用すると全員に公開</li>
+      <li>&nbsp;</li>
+      <li>・左クリック：カードを捨てる</li>
+      <li>&nbsp;</li>
+      <li>・捨て札をクリック：手札に回収</li>
+      <li>&nbsp;</li>
+      <li>・管理者用のボタンは押さないこと</li>
+    </ul>
+</div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
