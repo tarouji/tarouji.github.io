@@ -8,7 +8,7 @@ body {
 #publicCardArea {
   display: flex;
   flex-wrap: wrap;               /* 折り返し有効 */
-  max-width: 800px;              /* 175px × 4枚 + 余白を考慮（必要に応じて調整） */
+  max-width: 900px;              /* 175px × 4枚 + 余白を考慮（必要に応じて調整） */
   gap: 10px;                     /* 画像間の間隔 */
 }
 

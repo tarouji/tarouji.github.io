@@ -87,18 +87,36 @@ function showHand() {
   const name = getCurrentPlayerName();
   const area = document.getElementById("handArea");
   area.innerHTML = "";
+
   db.ref(`hands/${name}`).once("value").then((snapshot) => {
     const hand = snapshot.val() || [];
     hand.forEach((card, index) => {
+      const cardDiv = document.createElement("div");
+      cardDiv.style.display = "inline-block";
+      cardDiv.style.textAlign = "center";
+      cardDiv.style.margin = "10px";
+
       const img = document.createElement("img");
       img.src = `images/${card}`;
-      img.title = "左クリック：捨てる／右クリック：公開";
-      img.onclick = () => discardCard(name, index);
-      img.oncontextmenu = (e) => {
-        e.preventDefault();
-        revealCard(name, index);
-      };
-      area.appendChild(img);
+      img.style.width = "175px";
+      img.style.display = "block";
+      img.style.marginBottom = "5px";
+
+      // 公開ボタン
+      const revealBtn = document.createElement("button");
+      revealBtn.textContent = "使用"
+      revealBtn.onclick = () => revealCard(name, index);
+
+      // 捨てるボタン
+      const discardBtn = document.createElement("button");
+      discardBtn.textContent = "捨てる";
+      discardBtn.onclick = () => discardCard(name, index);
+
+      cardDiv.appendChild(img);
+      cardDiv.appendChild(revealBtn);
+      cardDiv.appendChild(discardBtn);
+
+      area.appendChild(cardDiv);
     });
   });
 }
