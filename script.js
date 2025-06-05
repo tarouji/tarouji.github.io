@@ -232,11 +232,24 @@ function updateDiscardArea() {
     const pile = snapshot.val() || [];
     area.innerHTML = "";
     pile.forEach((card, index) => {
+      const wrapper = document.createElement("div");
+      wrapper.style.display = "inline-block";
+      wrapper.style.textAlign = "center";
+      wrapper.style.margin = "10px";
+
       const img = document.createElement("img");
       img.src = `images/${card}`;
-      img.title = "クリックで手札に回収";
-      img.onclick = () => recoverFromDiscard(index);
-      area.appendChild(img);
+      img.style.width = "175px";
+      img.style.display = "block";
+      img.style.marginBottom = "5px";
+
+      const btn = document.createElement("button");
+      btn.textContent = "回収";
+      btn.onclick = () => recoverFromDiscard(index);
+
+      wrapper.appendChild(img);
+      wrapper.appendChild(btn);
+      area.appendChild(wrapper);
     });
   });
 }
