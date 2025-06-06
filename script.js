@@ -27,12 +27,21 @@ function registerPlayer() {
   localStorage.setItem("playerName", name);
   document.getElementById("nameEntry").style.display = "none";
   document.getElementById("mainGame").style.display = "flex";
-  updateDiscardArea();
+    updateDiscardArea();
   updateHandCount();
   updateDeckCount();
   listenPublicCards();
   showHand();
   listenDice(); // サイコロの同期
+  document.getElementById("refreshButton").disabled = false;
+  document.getElementById("refreshButton").disabled = false;
+  document.getElementById("drawCardButton").disabled = false;
+  document.getElementById("rollDiceButton").disabled = false;
+  document.getElementById("resetDiceButton").disabled = false;
+  document.getElementById("logoutButton").disabled = false;
+  document.getElementById("initDeckButton").disabled = false;
+  document.getElementById("resetGameButton").disabled = false;
+
 }
 
 function initDeck() {
@@ -43,7 +52,7 @@ function initDeck() {
   }
   shuffle(newDeck);
   db.ref("deck").set(newDeck);
-  alert("山札を初期化しました！");
+  alert("山札を初期化しました");
 }
 
 function shuffle(array) {
@@ -128,11 +137,6 @@ function discardCard(name, index) {
   handRef.once("value").then((snapshot) => {
     let hand = snapshot.val() || [];
 
-    if (hand.length <= MAX_HAND) {
-      alert("手札が4枚以下のため、カードを捨てることはできません。");
-      return;
-    }
-
     const confirmResult = confirm("このカードを捨てますか？");
     if (!confirmResult) return;
 
@@ -148,6 +152,7 @@ function discardCard(name, index) {
     showHand();
   });
 }
+
 
 function revealCard(name, index) {
   db.ref(`hands/${name}`).once("value").then((snapshot) => {
@@ -303,15 +308,22 @@ function updateDeckCount() {
 
 function resetGameData() {
   if (!confirm("本当に初期化しますか？")) return;
+
+  // Firebase 上の各情報を削除
   db.ref("hands").remove();
   db.ref("deck").remove();
   db.ref("discardPile").remove();
   db.ref("publicCardList").remove();
-  db.ref("dice").remove();  // ← 追加：サイコロのリセット
-  db.ref("players").remove(); // ← プレイヤー一覧も初期化
+  db.ref("dice").remove();
+  db.ref("players").remove();
 
-  alert("初期化しました");
-  location.reload();
+  // ✅ 山札を初期化
+  initDeck();
+
+  // ✅ ログアウト（画面リセット・ボタン無効化）
+  logout();
+
+  alert("初期化してログアウトしました");
 }
 
 function refreshAllViews() {
@@ -382,3 +394,62 @@ function resetDice() {
 function getCurrentPlayerName() {
   return localStorage.getItem("playerName");
 }
+
+window.onload = () => {
+  const savedName = localStorage.getItem("playerName");
+  if (savedName) {
+    // UIの表示切り替え
+    document.getElementById("nameEntry").style.display = "none";
+    document.getElementById("mainGame").style.display = "flex";
+
+    // ボタンを有効化
+    document.getElementById("refreshButton").disabled = false;
+    document.getElementById("drawCardButton").disabled = false;
+    document.getElementById("rollDiceButton").disabled = false;
+    document.getElementById("resetDiceButton").disabled = false;
+
+    // 情報の再表示
+    updateDiscardArea();
+    updateHandCount();
+    updateDeckCount();
+    listenPublicCards();
+    showHand();
+    listenDice();
+  }
+};
+
+function logout() {
+    localStorage.removeItem("playerName");
+
+  // 各ボタンを無効化
+  document.getElementById("refreshButton").disabled = true;
+  document.getElementById("drawCardButton").disabled = true;
+  document.getElementById("rollDiceButton").disabled = true;
+  document.getElementById("resetDiceButton").disabled = true;
+  document.getElementById("logoutButton").disabled = true;
+  document.getElementById("initDeckButton").disabled = true;
+  document.getElementById("resetGameButton").disabled = true;
+
+  // データのクリア（任意）
+  // location.reload(); ← これは使わずにそのままUI切り替えのほうが自然
+  location.reload();
+}
+
+function getCurrentPlayerName() {
+  return localStorage.getItem("playerName");
+}
+
+// ✅ ページ読み込み時に、初期化ボタンを押せないようにする
+window.onload = () => {
+  document.getElementById("initDeckButton").disabled = true;
+  document.getElementById("resetGameButton").disabled = true;
+};
+
+db.ref("players").on("value", (snapshot) => {
+  const players = snapshot.val();
+  const myName = getCurrentPlayerName();
+  if (myName && (!players || !players[myName])) {
+    alert("ゲームが初期化されました。再度参加してください。");
+    logout();
+  }
+});

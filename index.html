@@ -48,13 +48,13 @@
         <h2>サイコロ</h2>
         <div style="display: flex; align-items: center; gap: 10px;"></div>
         <span id="diceResult" style="font-size: 24px; margin: 0;">出目：--</span>
-        <button id="rollDiceButton" onclick="rollDice()">サイコロを振る</button>
-        <button id="resetDiceButton" onclick="resetDice()">リセット</button>
+        <button id="rollDiceButton" onclick="rollDice()" disabled>サイコロを振る</button>
+        <button id="resetDiceButton" onclick="resetDice()" disabled>リセット</button>
       </div>
 
       <div id="player-controls">
         <h2>手札</h2>
-        <button onclick="drawCard()">カードを引く</button>
+        <button id="drawCardButton" onclick="drawCard()" disabled>カードを引く</button>
       </div>
 
       <div id="game-area">
@@ -81,15 +81,14 @@
 
         <!-- 管理者用リセットボタン（見やすく下に配置） -->
         <hr>
-        <button onclick="initDeck()">【管理者用】山札の初期化（最初に押す）</button>
-        <button onclick="resetGameData()">【管理者用】ゲームの初期化（全データ削除）</button>
-
+        <button id="initDeckButton" onclick="initDeck()">【管理者用】山札の初期化（最初に押す）</button>
+        <button id="resetGameButton" onclick="resetGameData()">【管理者用】ゲームの初期化（全データ削除）</button>
       </div>
     </div>
 
     <!-- 右側：使い方 -->
     <div id="instructions">
-    <button onclick="refreshAllViews()">表示の更新</button>
+    <button id="refreshButton" onclick="refreshAllViews()" disabled>表示の更新</button>
     <h2>使い方</h2>
     <ul style="line-height: 1.8; list-style-type: none; padding-left: 0;">
       <li>・最初に名前を入力して参加</li>
@@ -100,6 +99,7 @@
       <li>&nbsp;</li>
       <li>・管理者用のボタンは押さないこと</li>
     </ul>
+    <button id="logoutButton" onclick="logout()" disabled>ログアウト</button>
 </div>
   </div>
 
