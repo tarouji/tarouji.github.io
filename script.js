@@ -27,19 +27,17 @@ function registerPlayer() {
   localStorage.setItem("playerName", name);
   document.getElementById("nameEntry").style.display = "none";
   document.getElementById("mainGame").style.display = "flex";
-    updateDiscardArea();
+  updateDiscardArea();
   updateHandCount();
   updateDeckCount();
   listenPublicCards();
   showHand();
   listenDice(); // サイコロの同期
   document.getElementById("refreshButton").disabled = false;
-  document.getElementById("refreshButton").disabled = false;
   document.getElementById("drawCardButton").disabled = false;
   document.getElementById("rollDiceButton").disabled = false;
   document.getElementById("resetDiceButton").disabled = false;
   document.getElementById("logoutButton").disabled = false;
-  document.getElementById("initDeckButton").disabled = false;
   document.getElementById("resetGameButton").disabled = false;
 
 }
@@ -317,13 +315,16 @@ function resetGameData() {
   db.ref("dice").remove();
   db.ref("players").remove();
 
-  // ✅ 山札を初期化
+  // ✅ 山札を初期化（ログアウト前に行う）
   initDeck();
 
   // ✅ ログアウト（画面リセット・ボタン無効化）
   logout();
 
   alert("初期化してログアウトしました");
+
+  // ✅ ページをリロードしてログアウト＆画面リセット
+  location.reload();
 }
 
 function refreshAllViews() {
@@ -395,29 +396,6 @@ function getCurrentPlayerName() {
   return localStorage.getItem("playerName");
 }
 
-window.onload = () => {
-  const savedName = localStorage.getItem("playerName");
-  if (savedName) {
-    // UIの表示切り替え
-    document.getElementById("nameEntry").style.display = "none";
-    document.getElementById("mainGame").style.display = "flex";
-
-    // ボタンを有効化
-    document.getElementById("refreshButton").disabled = false;
-    document.getElementById("drawCardButton").disabled = false;
-    document.getElementById("rollDiceButton").disabled = false;
-    document.getElementById("resetDiceButton").disabled = false;
-
-    // 情報の再表示
-    updateDiscardArea();
-    updateHandCount();
-    updateDeckCount();
-    listenPublicCards();
-    showHand();
-    listenDice();
-  }
-};
-
 function logout() {
     localStorage.removeItem("playerName");
 
@@ -427,7 +405,6 @@ function logout() {
   document.getElementById("rollDiceButton").disabled = true;
   document.getElementById("resetDiceButton").disabled = true;
   document.getElementById("logoutButton").disabled = true;
-  document.getElementById("initDeckButton").disabled = true;
   document.getElementById("resetGameButton").disabled = true;
 
   // データのクリア（任意）
@@ -435,21 +412,42 @@ function logout() {
   location.reload();
 }
 
-function getCurrentPlayerName() {
-  return localStorage.getItem("playerName");
-}
-
-// ✅ ページ読み込み時に、初期化ボタンを押せないようにする
 window.onload = () => {
-  document.getElementById("initDeckButton").disabled = true;
-  document.getElementById("resetGameButton").disabled = true;
-};
+  const savedName = localStorage.getItem("playerName");
+  const isLoggedIn = !!savedName;
 
-db.ref("players").on("value", (snapshot) => {
-  const players = snapshot.val();
-  const myName = getCurrentPlayerName();
-  if (myName && (!players || !players[myName])) {
-    alert("ゲームが初期化されました。再度参加してください。");
-    logout();
+  if (isLoggedIn) {
+    document.getElementById("nameEntry").style.display = "none";
+    document.getElementById("mainGame").style.display = "flex";
+
+    document.getElementById("refreshButton").disabled = false;
+    document.getElementById("drawCardButton").disabled = false;
+    document.getElementById("rollDiceButton").disabled = false;
+    document.getElementById("resetDiceButton").disabled = false;
+    document.getElementById("resetGameButton").disabled = false;
+    document.getElementById("logoutButton").disabled = false;
+
+    updateDiscardArea();
+    updateHandCount();
+    updateDeckCount();
+    listenPublicCards();
+    showHand();
+    listenDice();
+  } else {
+    document.getElementById("refreshButton").disabled = true;
+    document.getElementById("drawCardButton").disabled = true;
+    document.getElementById("rollDiceButton").disabled = true;
+    document.getElementById("resetDiceButton").disabled = true;
+    document.getElementById("resetGameButton").disabled = true;
+    document.getElementById("logoutButton").disabled = true;
   }
-});
+
+  // プレイヤーが存在しない場合のリスナーはここに入れてOK
+  db.ref("players").on("value", (snapshot) => {
+    const players = snapshot.val();
+    if (savedName && (!players || !players[savedName])) {
+      alert("ゲームが初期化されました。再度参加してください。");
+      logout();
+    }
+  });
+};
