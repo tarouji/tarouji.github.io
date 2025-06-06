@@ -81,7 +81,7 @@
 
         <!-- 管理者用リセットボタン（見やすく下に配置） -->
         <hr>
-        <button id="resetGameButton" onclick="resetGameData()">ゲーム初期化（管理者用）</button>
+        <button id="resetGameButton" onclick="resetGameData()" disabled>ゲーム初期化（管理者のみ）</button>
       </div>
     </div>
 
@@ -92,11 +92,13 @@
     <ul style="line-height: 1.8; list-style-type: none; padding-left: 0;">
       <li>・最初に名前を入力して参加</li>
       <li>&nbsp;</li>
+      <li>・サイコロはリセットして振る</li>
+      <li>&nbsp;</li>
       <li>・ボタンを押してカードを引く</li>
       <li>&nbsp;</li>
       <li>・手札を使用すると全員に公開</li>
       <li>&nbsp;</li>
-      <li>・管理者用のボタンは押さないこと</li>
+      <li>・初期化は管理者がするように</li>
     </ul>
     <button id="logoutButton" onclick="logout()" disabled>ログアウト</button>
 </div>
