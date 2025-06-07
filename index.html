@@ -5,27 +5,34 @@
   <title>ゼーコガンニョム・テストプレイ用</title>
   <link rel="stylesheet" href="style.css">
   <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-    }
+  body {
+    font-family: sans-serif;
+    padding: 20px;
+  }
 
-    #handArea img,
-    #discardArea img,
-    #publicCardArea img {
-      width: 175px;
-      margin: 5px;
-      cursor: pointer;
-    }
+  #handArea img,
+  #discardArea img,
+  #publicCardArea img {
+    width: 175px;
+    margin: 5px;
+    cursor: pointer;
+  }
 
-    #instructions {
-      max-width: 250px;
-      font-size: 14px;
-      background: #f9f9f9;
-      padding: 10px;
-      border-left: 3px solid #ccc;
-    }
+  #instructions {
+    max-width: 250px;
+    font-size: 14px;
+    background: #f9f9f9;
+    padding: 10px;
+    border-left: 3px solid #ccc;
+  }
+
+  /* 空白用のliに高さをつける */
+  li.gap-line {
+    height: 6px; /* ← 好きな行間に調整可 */
+    list-style: none;
+  }
   </style>
+
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -61,7 +68,7 @@
         <div id="handArea"></div>
         <button id="initUnitAButton" onclick="spawnInitialUnitA()" disabled>初期ユニットA</button>
         <button id="initUnitBButton" onclick="spawnInitialUnitB()" disabled>初期ユニットB</button>
-        <h2>使用カード（公開）</h2>
+        <h2>使用中のカード</h2>
         <div id="publicCardArea"></div>
         <button id="confirmPublicCardButton" onclick="confirmPublicCard()" style="display:none;">
           全員確認したので捨てる
@@ -94,14 +101,16 @@
     <h2>使い方</h2>
     <ul style="line-height: 1.8; list-style-type: none; padding-left: 0;">
       <li>・プレイヤー名を入力してログイン</li>
-      <li>&nbsp;</li>
-      <li>・サイコロはリセットして振る</li>
-      <li>&nbsp;</li>
-      <li>・手札を使用すると全員に公開</li>
-      <li>&nbsp;</li>
+      <li class="gap-line"></li>
+      <li>・サイコロは共有される</li>
+      <li class="gap-line"></li>
+      <li>・手札は自分しか見えない</li>
+      <li class="gap-line"></li>
+      <li>・カードを使用すると公開される</li>
+      <li class="gap-line"></li>
       <li>・初期ユニットはボタンで出す</li>
-      <li>&nbsp;</li>
-      <li>・初期化は管理者が行うこと</li>
+      <li class="gap-line"></li>
+      <li>・ゲーム初期化は管理者が行う</li>
     </ul>
     <button id="logoutButton" onclick="logout()" disabled>ログアウト</button>
 </div>
