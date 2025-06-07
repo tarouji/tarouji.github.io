@@ -35,7 +35,7 @@
 
   <!-- 名前入力画面 -->
   <div id="nameEntry">
-    <label for="playerNameInput">あなたの名前：</label>
+    <label for="playerNameInput">プレイヤー名：</label>
     <input type="text" id="playerNameInput" placeholder="入力する">
     <button onclick="registerPlayer()">ゲームに参加</button>
   </div>
@@ -59,7 +59,8 @@
 
       <div id="game-area">
         <div id="handArea"></div>
-
+        <button id="initUnitAButton" onclick="spawnInitialUnitA()" disabled>初期ユニットA</button>
+        <button id="initUnitBButton" onclick="spawnInitialUnitB()" disabled>初期ユニットB</button>
         <h2>使用カード</h2>
         <div id="publicCardArea"></div>
         <button id="confirmPublicCardButton" onclick="confirmPublicCard()" style="display:none;">
@@ -87,18 +88,20 @@
 
     <!-- 右側：使い方 -->
     <div id="instructions">
+    <!-- 参加中のプレイヤー名を表示 -->
+    <p id="playerNameDisplay" style="font-weight: bold;"></p>
     <button id="refreshButton" onclick="refreshAllViews()" disabled>表示の更新</button>
     <h2>使い方</h2>
     <ul style="line-height: 1.8; list-style-type: none; padding-left: 0;">
-      <li>・最初に名前を入力して参加</li>
+      <li>・プレイヤー名を入力してログイン</li>
       <li>&nbsp;</li>
       <li>・サイコロはリセットして振る</li>
       <li>&nbsp;</li>
-      <li>・ボタンを押してカードを引く</li>
-      <li>&nbsp;</li>
       <li>・手札を使用すると全員に公開</li>
       <li>&nbsp;</li>
-      <li>・初期化は管理者がするように</li>
+      <li>・初期ユニットはボタンで出す</li>
+      <li>&nbsp;</li>
+      <li>・初期化は管理者が行うこと</li>
     </ul>
     <button id="logoutButton" onclick="logout()" disabled>ログアウト</button>
 </div>

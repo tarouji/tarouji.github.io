@@ -27,6 +27,7 @@ function registerPlayer() {
   localStorage.setItem("playerName", name);
   document.getElementById("nameEntry").style.display = "none";
   document.getElementById("mainGame").style.display = "flex";
+  document.getElementById("playerNameDisplay").textContent = `プレイヤー名：${name}`;
   updateDiscardArea();
   updateHandCount();
   updateDeckCount();
@@ -50,7 +51,6 @@ function initDeck() {
   }
   shuffle(newDeck);
   db.ref("deck").set(newDeck);
-  alert("山札を初期化しました");
 }
 
 function shuffle(array) {
@@ -175,6 +175,7 @@ function listenPublicCards() {
   db.ref("publicCardList").on("value", (snapshot) => {
     const cards = snapshot.val() || {};
     area.innerHTML = "";
+
     for (let key in cards) {
       const data = cards[key];
       const wrapper = document.createElement("div");
@@ -190,22 +191,49 @@ function listenPublicCards() {
       wrapper.appendChild(label);
 
       if (data.owner === getCurrentPlayerName()) {
-        const btn1 = document.createElement("button");
-        btn1.textContent = "捨てる";
-        btn1.onclick = () => confirmPublicCard(key, data.card);
-        wrapper.appendChild(btn1);
+        if (data.card === "s_unit01.png" || data.card === "s_unit02.png") {
+          const delBtn = document.createElement("button");
+          delBtn.textContent = "削除";
+          delBtn.onclick = () => db.ref(`publicCardList/${key}`).remove();
+          wrapper.appendChild(delBtn);
+        } else {
+          const btn1 = document.createElement("button");
+          btn1.textContent = "捨てる";
+          btn1.onclick = () => confirmPublicCard(key, data.card);
+          wrapper.appendChild(btn1);
 
-        const btn2 = document.createElement("button");
-        btn2.textContent = "戻す";
-        btn2.onclick = () => returnPublicCardToHand(key, data.card);
-        wrapper.appendChild(btn2);
+          const btn2 = document.createElement("button");
+          btn2.textContent = "戻す";
+          btn2.onclick = () => returnPublicCardToHand(key, data.card);
+          wrapper.appendChild(btn2);
+        }
       }
+
       area.appendChild(wrapper);
     }
+
+    // ✅ 初期ユニットAまたはBがすでに出ていれば、両方のボタンを無効化
+    const currentPlayer = getCurrentPlayerName();
+    const hasInitialUnit = Object.values(cards).some(
+      (card) =>
+        (card.card === "s_unit01.png" || card.card === "s_unit02.png") &&
+        card.owner === currentPlayer
+    );
+
+    const btnA = document.getElementById("initUnitAButton");
+    const btnB = document.getElementById("initUnitBButton");
+    if (btnA) btnA.disabled = hasInitialUnit;
+    if (btnB) btnB.disabled = hasInitialUnit;
   });
 }
 
 function confirmPublicCard(key, card) {
+  if (card === "s_unit01.png" || card === "s_unit02.png") {
+    // 初期ユニットA または B は削除のみ
+    db.ref(`publicCardList/${key}`).remove();
+    return;
+  }
+
   const discardRef = db.ref("discardPile");
   discardRef.once("value").then((snapshot) => {
     const pile = snapshot.val() || [];
@@ -217,6 +245,12 @@ function confirmPublicCard(key, card) {
 }
 
 function returnPublicCardToHand(key, card) {
+  if (card === "s_unit01.png" || card === "s_unit02.png") {
+    // 初期ユニットA または B は削除のみ
+    db.ref(`publicCardList/${key}`).remove();
+    return;
+  }
+
   const name = getCurrentPlayerName();
   db.ref(`hands/${name}`).once("value").then((snapshot) => {
     const hand = snapshot.val() || [];
@@ -399,17 +433,63 @@ function getCurrentPlayerName() {
 function logout() {
     localStorage.removeItem("playerName");
 
-  // 各ボタンを無効化
+  // 各ボタン等を無効化
+  document.getElementById("playerNameDisplay").textContent = "";
   document.getElementById("refreshButton").disabled = true;
   document.getElementById("drawCardButton").disabled = true;
   document.getElementById("rollDiceButton").disabled = true;
   document.getElementById("resetDiceButton").disabled = true;
   document.getElementById("logoutButton").disabled = true;
   document.getElementById("resetGameButton").disabled = true;
+  document.getElementById("initUnitAButton").disabled = true;
+  document.getElementById("initUnitBButton").disabled = true;
 
   // データのクリア（任意）
   // location.reload(); ← これは使わずにそのままUI切り替えのほうが自然
   location.reload();
+}
+
+function spawnInitialUnitA() {
+  const name = getCurrentPlayerName();
+  const specialKey = `initA_${name}`; // ← 固定キーにする（1人1枚制限）
+
+  // すでに出していないか確認
+  db.ref(`publicCardList/${specialKey}`).once("value").then((snapshot) => {
+    if (snapshot.exists()) {
+      alert("初期ユニットAはすでに出しています。");
+      return;
+    }
+
+    // まだ出してなければ追加
+    db.ref(`publicCardList/${specialKey}`).set({
+      card: "s_unit01.png",
+      owner: name,
+      isTemporary: true
+    });
+
+    // ボタンを無効にする
+    document.getElementById("initUnitAButton").disabled = true;
+  });
+}
+
+function spawnInitialUnitB() {
+  const name = getCurrentPlayerName();
+  const specialKey = `initB_${name}`; // 1人1枚制限のキー
+
+  db.ref(`publicCardList/${specialKey}`).once("value").then((snapshot) => {
+    if (snapshot.exists()) {
+      alert("初期ユニットBはすでに出しています。");
+      return;
+    }
+
+    db.ref(`publicCardList/${specialKey}`).set({
+      card: "s_unit02.png",
+      owner: name,
+      isTemporary: true
+    });
+
+    document.getElementById("initUnitBButton").disabled = true;
+  });
 }
 
 window.onload = () => {
@@ -426,6 +506,8 @@ window.onload = () => {
     document.getElementById("resetDiceButton").disabled = false;
     document.getElementById("resetGameButton").disabled = false;
     document.getElementById("logoutButton").disabled = false;
+
+    document.getElementById("playerNameDisplay").textContent = `プレイヤー名：${savedName}`;
 
     updateDiscardArea();
     updateHandCount();
