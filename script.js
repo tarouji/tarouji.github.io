@@ -17,7 +17,7 @@ const INITIAL_DECK_SIZE = 50;
 function registerPlayer() {
   const name = document.getElementById("playerNameInput").value.trim();
   if (!name) {
-    alert("名前を入力してください");
+    alert("プレイヤー名を入力してください");
     return;
   }
 
@@ -406,10 +406,10 @@ function listenDice() {
   db.ref("dice").on("value", (snapshot) => {
     const data = snapshot.val();
     if (data) {
-      diceResult.textContent = `出目：${data.value}`;
+      diceResult.textContent = `［ ${data.value} ］`;
       rollBtn.disabled = data.locked;
     } else {
-      diceResult.textContent = "出目：--";
+      diceResult.textContent = "-- ";
       rollBtn.disabled = false;
     }
   });
@@ -528,7 +528,7 @@ window.onload = () => {
   db.ref("players").on("value", (snapshot) => {
     const players = snapshot.val();
     if (savedName && (!players || !players[savedName])) {
-      alert("ゲームが初期化されました。再度参加してください。");
+      alert("ゲームが初期化されました。ログインしてください。");
       logout();
     }
   });

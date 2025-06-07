@@ -56,3 +56,8 @@ button {
   border: 2px solid #ccc;   /* 枠線（任意） */
   border-radius: 8px;        /* 角を丸くする（任意） */
 }
+
+#diceResult {
+  font-size: 80px;  /* ← 数字を大きくする */
+  margin: 10px 0;
+}

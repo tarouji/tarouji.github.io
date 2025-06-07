@@ -37,7 +37,7 @@
   <div id="nameEntry">
     <label for="playerNameInput">プレイヤー名：</label>
     <input type="text" id="playerNameInput" placeholder="入力する">
-    <button onclick="registerPlayer()">ゲームに参加</button>
+    <button onclick="registerPlayer()">ログイン</button>
   </div>
 
   <!-- ゲーム画面 -->
@@ -47,7 +47,7 @@
       <div id="diceArea" style="margin-bottom: 20px;">
         <h2>サイコロ</h2>
         <div style="display: flex; align-items: center; gap: 10px;"></div>
-        <span id="diceResult" style="font-size: 24px; margin: 0;">出目：--</span>
+        <span id="diceResult" style="font-size: 24px; margin: 0;">--</span>
         <button id="rollDiceButton" onclick="rollDice()" disabled>サイコロを振る</button>
         <button id="resetDiceButton" onclick="resetDice()" disabled>リセット</button>
       </div>
@@ -61,7 +61,7 @@
         <div id="handArea"></div>
         <button id="initUnitAButton" onclick="spawnInitialUnitA()" disabled>初期ユニットA</button>
         <button id="initUnitBButton" onclick="spawnInitialUnitB()" disabled>初期ユニットB</button>
-        <h2>使用カード</h2>
+        <h2>使用カード（公開）</h2>
         <div id="publicCardArea"></div>
         <button id="confirmPublicCardButton" onclick="confirmPublicCard()" style="display:none;">
           全員確認したので捨てる
