@@ -367,7 +367,6 @@ function refreshAllViews() {
   updateHandCount();      // プレイヤーの手札枚数を表示
   updateDeckCount();      // 山札の残り枚数を表示
 
-  // 公開カードの再表示（リアルタイムでなく1回だけ）
   const area = document.getElementById("publicCardArea");
   db.ref("publicCardList").once("value").then((snapshot) => {
     const cards = snapshot.val() || {};
@@ -375,21 +374,35 @@ function refreshAllViews() {
     for (let key in cards) {
       const data = cards[key];
       const wrapper = document.createElement("div");
+      wrapper.style.display = "inline-block";
+
       const img = document.createElement("img");
       img.src = `images/${data.card}`;
       img.style.width = "175px";
       wrapper.appendChild(img);
 
-      if (data.owner === getCurrentPlayerName()) {
-        const btn1 = document.createElement("button");
-        btn1.textContent = "捨てる";
-        btn1.onclick = () => confirmPublicCard(key, data.card);
-        wrapper.appendChild(btn1);
+      // ⭐ ここが抜けていた
+      const label = document.createElement("p");
+      label.textContent = `${data.owner} のカード`;
+      wrapper.appendChild(label);
 
-        const btn2 = document.createElement("button");
-        btn2.textContent = "戻す";
-        btn2.onclick = () => returnPublicCardToHand(key, data.card);
-        wrapper.appendChild(btn2);
+      if (data.owner === getCurrentPlayerName()) {
+        if (data.card === "s_unit01.png" || data.card === "s_unit02.png") {
+          const delBtn = document.createElement("button");
+          delBtn.textContent = "削除";
+          delBtn.onclick = () => db.ref(`publicCardList/${key}`).remove();
+          wrapper.appendChild(delBtn);
+        } else {
+          const btn1 = document.createElement("button");
+          btn1.textContent = "捨てる";
+          btn1.onclick = () => confirmPublicCard(key, data.card);
+          wrapper.appendChild(btn1);
+
+          const btn2 = document.createElement("button");
+          btn2.textContent = "戻す";
+          btn2.onclick = () => returnPublicCardToHand(key, data.card);
+          wrapper.appendChild(btn2);
+        }
       }
 
       area.appendChild(wrapper);
@@ -397,7 +410,6 @@ function refreshAllViews() {
   });
 }
 
-// サイコロの出目を表示・同期
 function listenDice() {
   const diceResult = document.getElementById("diceResult");
   const rollBtn = document.getElementById("rollDiceButton");
