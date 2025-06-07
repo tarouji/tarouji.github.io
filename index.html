@@ -10,11 +10,17 @@
     padding: 20px;
   }
 
+  #handArea {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    max-width: 740px; /* 175px × 4 + gap(10px) × 3 */
+  }
+
   #handArea img,
   #discardArea img,
   #publicCardArea img {
     width: 175px;
-    margin: 5px;
     cursor: pointer;
   }
 
@@ -26,10 +32,9 @@
     border-left: 3px solid #ccc;
   }
 
-  /* 空白用のliに高さをつける */
-  li.gap-line {
-    height: 6px; /* ← 好きな行間に調整可 */
-    list-style: none;
+  li.small-gap {
+    margin-top: 2px;
+    margin-bottom: 2px;
   }
   </style>
 
