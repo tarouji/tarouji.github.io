@@ -187,7 +187,7 @@ function listenPublicCards() {
       wrapper.appendChild(img);
 
       const label = document.createElement("p");
-      label.textContent = `${data.owner} のカード`;
+      label.textContent = `${data.owner} が使用`;
       wrapper.appendChild(label);
 
       if (data.owner === getCurrentPlayerName()) {
@@ -418,10 +418,10 @@ function listenDice() {
   db.ref("dice").on("value", (snapshot) => {
     const data = snapshot.val();
     if (data) {
-      diceResult.textContent = `［ ${data.value} ］`;
+      diceResult.textContent = `　${data.value}　`;
       rollBtn.disabled = data.locked;
     } else {
-      diceResult.textContent = "-- ";
+      diceResult.textContent = "　--　";
       rollBtn.disabled = false;
     }
   });
