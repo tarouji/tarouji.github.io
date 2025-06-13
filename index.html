@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>ゼーコガンニョム・テストプレイ用</title>
+  <title>ゼーコガンニョム・手持ちカード</title>
   <link rel="stylesheet" href="style.css">
   <style>
   body {
@@ -43,7 +43,6 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
 <body>
-  <h1>ゼーコガンニョム・テストプレイ用</h1>
 
   <!-- 名前入力画面 -->
   <div id="nameEntry">
@@ -57,15 +56,15 @@
     <!-- 左側：ゲーム本体 -->
     <div id="mainColumn">
       <div id="diceArea" style="margin-bottom: 20px;">
-        <h2>サイコロ</h2>
+        <h3>スキルサイコロ</h3>
         <div style="display: flex; align-items: center; gap: 10px;"></div>
         <span id="diceResult" style="font-size: 35px; margin: 0;">　--　</span>
-        <button id="rollDiceButton" onclick="rollDice()" disabled>サイコロを振る</button>
+        <button id="rollDiceButton" onclick="rollDice()" disabled>サイコロをふる</button>
         <button id="resetDiceButton" onclick="resetDice()" disabled>リセット</button>
       </div>
 
       <div id="player-controls">
-        <h2>手札（4枚まで）</h2>
+        <h3>手札（4枚まで）</h3>
         <button id="drawCardButton" onclick="drawCard()" disabled>カードを引く</button>
       </div>
 
@@ -74,21 +73,22 @@
         <button id="initUnitAButton" onclick="spawnInitialUnitA()" disabled>初期ユニットA</button>
         <button id="initUnitBButton" onclick="spawnInitialUnitB()" disabled>初期ユニットB</button>
         
-        <h2>使用中のユニット・スキル</h2>
+        <h3>使用中のユニット・スキル</h3>
         <div id="publicCardArea"></div>
-        
-        <h2>捨て札</h2>
-        <div id="discardArea"></div>
 
-        <h2>各プレイヤーの手札枚数</h2>
-        <div id="handCountArea"></div>
+        <h3>各プレイヤーの手札枚数</h3>
+        <div id="handCountArea"></div>        
 
-        <h2>山札の残り枚数</h2>
+        <h3>山札の残り枚数</h3>
         <p id="deckCountArea">-- 枚</p>
+
+        <h3>捨て札</h3>
+        <div id="discardArea"></div>
 
         <!-- 管理者用リセットボタン（見やすく下に配置） -->
         <hr>
         <button id="resetGameButton" onclick="resetGameData()" disabled>ゲーム初期化（管理者のみ）</button>
+        <p style="font-size: 12px;">※ゲーム初期化は管理者のみ行うこと</p>
       </div>
     </div>
 
@@ -97,19 +97,40 @@
     <!-- 参加中のプレイヤー名を表示 -->
     <p id="playerNameDisplay" style="font-weight: bold;"></p>
     <button id="refreshButton" onclick="refreshAllViews()" disabled>表示の更新</button>
-    <h2>使い方</h2>
+    <h3>ゲームルール補足</h3>
     <ul style="line-height: 1.8; list-style-type: none; padding-left: 0;">
-      <li>・プレイヤー名を入力してログイン</li>
+      <li>(1) 移動について</li>
       <li class="gap-line"></li>
-      <li>・サイコロは共有される</li>
+      <li>・カードの表記は最大移動マス</li>
       <li class="gap-line"></li>
-      <li>・手札は自分しか見えない</li>
+      <li>・0マス移動も可</li>
       <li class="gap-line"></li>
-      <li>・カードを使用すると公開される</li>
+      <li>(2) 射撃攻撃について</li>
       <li class="gap-line"></li>
-      <li>・初期ユニットはボタンで出す</li>
+      <li>・敵ユニットまで最短ルートで攻撃</li>
       <li class="gap-line"></li>
-      <li>・ゲーム初期化は管理者が行う</li>
+      <li>・射程2-5なら隣接マスには攻撃不可</li>
+      <li class="gap-line"></li>
+      <li>(3) 攻撃時のスキルカード使用</li>
+      <li class="gap-line"></li>
+      <li>・カード効果は出した順番に処理</li>
+      <li class="gap-line"></li>
+      <li>・効果を処理してからダメージ</li>
+      <li class="gap-line"></li>
+      <li>(4) ユニット乗り換えについて</li>
+      <li class="gap-line"></li>
+      <li>・移動して母艦に隣接したらできる</li>
+      <li class="gap-line"></li>
+      <li>・高レベルへの乗り換えは+1まで</li>
+      <li class="gap-line"></li>
+      <li>(5) 補給について</li>
+      <li class="gap-line"></li>
+      <li>・移動して母艦に隣接したらできる</li>
+      <li class="gap-line"></li>
+      <li>・耐久値10未満のときだけ可能</li>
+      <li class="gap-line"></li>
+      <li>・耐久値10回復、カード1枚引く</li>
+      <li class="gap-line"></li>
     </ul>
     <button id="logoutButton" onclick="logout()" disabled>ログアウト</button>
 </div>
