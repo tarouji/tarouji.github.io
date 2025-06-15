@@ -1,63 +1,367 @@
-body {
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: auto;  /* 横スクロールを許可 */
   font-family: sans-serif;
-  padding: 20px;
-}
-
-#handArea,
-#discardArea,
-#publicCardArea {
-  display: flex;
-  flex-wrap: wrap;               /* 折り返し有効 */
-  max-width: 900px;              /* 175px × 4枚 + 余白を考慮（必要に応じて調整） */
-  gap: 10px;                     /* 画像間の間隔 */
-}
-
-#handArea img,
-#discardArea img,
-#publicCardArea img {
-  width: 175px;
-  margin: 5px;
-  cursor: pointer;
-
-  /* 枠線・デザイン追加 */
-  border: 1px solid black;
-  border-radius: 8px;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-#instructions {
-  max-width: 300px;
-  font-size: 14px;
-  background: #f9f9f9;
-  padding: 10px;
-  border-left: 3px solid #ccc;
-}
-
-button {
-  margin: 5px;
-  padding: 5px 10px;
-  font-size: 14px;
-}
-
-#publicCardArea div {
-  display: inline-block;
+  background-color: #eee;
   text-align: center;
-  margin: 10px;
 }
 
-#publicCardArea p {
-  margin: 4px 0 0 0;
+#gameArea {
+  display: none;  /* 初期は非表示 */
+  justify-content: flex-start;  /* 左寄せで横並び */
+  align-items: flex-start;
+  gap: 20px;
+  padding: 20px;
+  min-width: 900px;  /* 横幅固定 */
+  flex-wrap: nowrap; /* 折り返さず横並び固定 */
+  flex-direction: row;
+  overflow-x: auto;
+}
+
+.teamPanel {
+  width: 200px;
+  text-align: left;
+  flex-shrink: 0;  /* 縮小不可 */
+}
+
+.unitList {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.unitCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 60px;
+}
+
+.unitCard img {
+  width: 50px;
+  height: auto;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.unitCard img.selected-a {
+  border: 4px solid red;
+  box-shadow: 0 0 5px red;
+}
+
+.unitCard img.selected-b {
+  border: 4px solid blue;
+  box-shadow: 0 0 5px blue;
+}
+
+#mapContainer {
+  width: 900px;  /* マップ幅固定 */
+  position: relative;
+  flex-shrink: 0; /* 縮小不可 */
+}
+
+#mapImage {
+  width: 900px;
+  height: auto;
+  display: block;
+}
+
+#hexLabels {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.hexLabel {
+  position: absolute;
+  font-size: 12px;
+  color: #888888;
+  font-weight: bold;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+
+.hexLabel.allowed-a {
+  border: 4px solid red;
+  border-radius: 0;
+  box-sizing: border-box;
+}
+
+.hexLabel.allowed-b {
+  border: 4px solid blue;
+  border-radius: 0;
+  box-sizing: border-box;
+}
+
+#unitLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.unitOnMap {
+  position: absolute;
+  width: 35px;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+}
+
+.unitOnMap.a {
+  border: 4px solid red;
+  border-radius: 4px;
+}
+
+.unitOnMap.b {
+  border: 4px solid blue;
+  border-radius: 4px;
+}
+
+.unitStatus {
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 10px;
+  background-color: #fff;
+  font-family: sans-serif;
+  font-size: 14px;
+}
+
+.playerInfo {
+  font-weight: bold;
+  font-size: 12px;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.playerStats {
   font-size: 12px;
 }
 
-#publicCardArea {
-  background: #d4feff;
-  padding: 10px;
-  border: 2px solid #ccc;   /* 枠線（任意） */
-  border-radius: 8px;        /* 角を丸くする（任意） */
+.unitName {
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 5px;
 }
 
-#diceResult {
-  font-size: 80px;  /* ← 数字を大きくする */
-  margin: 10px 0;
+.unitHP {
+  font-size: 12px;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.unitNumberLabel {
+  position: absolute;
+  font-size: 16px;
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.hexLabel.highlight-move {
+  border: 3px dashed rgb(20, 255, 40);
+  box-sizing: border-box;
+}
+
+.pointControl {
+  margin-bottom: 10px;
+}
+
+.pointLabel {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.pointRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+
+#pointA, #pointB {
+  font-size: 25px;
+  font-weight: bold;
+}
+
+#missionArea {
+  display: flex;           /* 横並びにする */
+  justify-content: center; /* 中央寄せ */
+  gap: 20px;               /* グループ間の隙間 */
+  margin-top: 20px;
+  flex-wrap: wrap;         /* 幅が狭い場合は折り返しOK */
+}
+
+.missionWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.missionCard {
+  width: 150px;
+  height: auto;
+  border: 2px solid #888;
+  border-radius: 8px;
+  background-color: white;
+}
+
+.clearLabel {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgb(165, 165, 165);
+  color: rgb(0, 0, 0);
+  padding: 10px 20px;
+  font-weight: bold;
+  border-radius: 10px;
+  font-size: 25px;
+  pointer-events: none;
+  z-index: 10;
+  writing-mode: horizontal-tb;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.missionButtons {
+  margin-top: 8px;
+  display: flex;
+  gap: 6px;
+}
+
+#leftPanel h2 {
+  border: 3px solid red;
+  padding: 4px 8px;
+  border-radius: 8px;
+  display: inline-block;
+  font-size: 24px;
+}
+
+#rightPanel h2 {
+  border: 3px solid blue;
+  padding: 4px 8px;
+  border-radius: 8px;
+  display: inline-block;
+  font-size: 24px;
+}
+
+.loginPanel {
+  margin: 20px auto;
+  padding: 10px;
+  border: 2px solid #888;
+  width: 300px;
+  background: #fff;
+}
+
+#loginArea {
+  padding: 20px;
+  max-width: 300px;
+  margin: 50px auto;
+  background-color: #fff;
+  border: 2px solid #888;
+  border-radius: 8px;
+  display: block;
+}
+
+.selected-a {
+  border: 3px solid red;
+  padding: 4px;
+  display: inline-block;
+}
+
+.selected-b {
+  border: 3px solid blue;
+  padding: 4px;
+  display: inline-block;
+}
+
+#diceArea {
+  margin-top: 15px;
+  margin-bottom: 5px;
+  text-align: center;
+  background-color: #fff;
+  border: 2px solid #888;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 20px;
+  width: fit-content;
+}
+
+#buttonArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 15px;  /* 上に余白を少し */
+}
+
+.missionCard.secret-a {
+  border: 4px solid red;
+}
+
+.missionCard.secret-b {
+  border: 4px solid blue;
+}
+
+/* スマホでもPCと同じレイアウトを保持し、横スクロールを許可 */
+@media (max-width: 768px) {
+  #gameArea {
+    min-width: 900px;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+
+  #mapContainer {
+    width: 900px;
+    flex-shrink: 0;
+  }
+
+  .teamPanel {
+    width: 200px;
+    flex-shrink: 0;
+  }
+}
+
+.missionAreaContainer {
+  margin-top: 10px;
+  padding: 10px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  background: #fff;
+  max-width: 800px; /* 必要に応じ調整 */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.missionGroup {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-width: 180px;
+}
+
+.missionAreaContainer h4 {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+#mapCenterWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;  /* ← これがマップに基づいて中央揃えるキモ */
+  gap: 10px;
 }
