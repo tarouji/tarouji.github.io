@@ -29,11 +29,11 @@ function registerPlayer() {
   document.getElementById("mainGame").style.display = "flex";
   document.getElementById("playerNameDisplay").textContent = `プレイヤー名：${name}`;
   updateDiscardArea();
-  updateHandCount();
   updateDeckCount();
   listenPublicCards();
   showHand();
   listenDice(); // サイコロの同期
+  listenHandCounts();
   document.getElementById("refreshButton").disabled = false;
   document.getElementById("drawCardButton").disabled = false;
   document.getElementById("rollDiceButton").disabled = false;
@@ -146,7 +146,6 @@ function discardCard(name, index) {
       discardRef.set(discardPile);
     });
 
-    updateHandCount();
     showHand();
   });
 }
@@ -166,6 +165,11 @@ function revealCard(name, index) {
     db.ref(`hands/${name}`).set(hand);
     db.ref("publicCardList").push({ card, owner: name });
     showHand();
+  });
+}
+
+function listenHandCounts() {
+  db.ref("hands").on("value", () => {
     updateHandCount();
   });
 }
@@ -258,7 +262,6 @@ function returnPublicCardToHand(key, card) {
     db.ref(`hands/${name}`).set(hand);
     db.ref(`publicCardList/${key}`).remove();
     showHand();
-    updateHandCount();
     listenPublicCards(); // 公開カードエリアを再描画する
   });
 }
@@ -315,18 +318,27 @@ function recoverFromDiscard(index) {
 
 function updateHandCount() {
   const area = document.getElementById("handCountArea");
-  area.innerHTML = "";
+  area.innerHTML = ""; // まず完全クリア
 
   db.ref("players").once("value").then((psnap) => {
     const players = psnap.val() || {};
-    for (let name in players) {
-      db.ref(`hands/${name}`).once("value").then((hsnap) => {
-        const hand = hsnap.val() || [];
+    const playerNames = Object.keys(players);
+
+    // 全プレイヤーの手札枚数取得をPromise.allで一斉取得
+    const handPromises = playerNames.map(name =>
+      db.ref(`hands/${name}`).once("value").then(hsnap => {
+        return { name, count: (hsnap.val() || []).length };
+      })
+    );
+
+    Promise.all(handPromises).then(results => {
+      // 表示は一気にまとめて行う（←これが重要）
+      results.forEach(({ name, count }) => {
         const p = document.createElement("p");
-        p.textContent = `${name}：${hand.length} 枚`;
+        p.textContent = `${name}：${count} 枚`;
         area.appendChild(p);
       });
-    }
+    });
   });
 }
 
@@ -527,6 +539,8 @@ window.onload = () => {
     listenPublicCards();
     showHand();
     listenDice();
+    listenHandCounts();
+
   } else {
     document.getElementById("refreshButton").disabled = true;
     document.getElementById("drawCardButton").disabled = true;

@@ -3,13 +3,21 @@ body {
   padding: 20px;
 }
 
-#handArea,
+#handArea {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 10px;
+  width: 100%;       /* 幅を画面に合わせる */
+  max-width: none;   /* 上限を外す */
+}
+
 #discardArea,
 #publicCardArea {
   display: flex;
-  flex-wrap: wrap;               /* 折り返し有効 */
-  max-width: 900px;              /* 175px × 4枚 + 余白を考慮（必要に応じて調整） */
-  gap: 10px;                     /* 画像間の間隔 */
+  flex-wrap: wrap;
+  max-width: 900px;
+  gap: 10px;
 }
 
 #handArea img,
